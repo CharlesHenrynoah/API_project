@@ -29,21 +29,17 @@ class Settings:
 
             cursor = conn.cursor()
 
-            cursor.execute("SELECT * FROM culture;")
-            # Récupérez les résultats de la requête
+            cursor.execute('SELECT * FROM public."CULTURE";')
             rows = cursor.fetchall()
-
-            # Parcourez les résultats et affichez-les (ou faites autre chose avec eux)
             for row in rows:
                 print(row)
             cursor.close()
             conn.close()
 
-            return f"Connecté à PostgreSQL version : {version}"
+            return f"Connecté à PostgreSQL version :"
 
         except Exception as e:
             return f"Erreur de connexion à la base de données : {e}"
 
 # Test de la connexion à la base de données
 test_result = Settings.test_database_connection()
-print(test_result)
