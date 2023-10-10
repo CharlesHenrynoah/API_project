@@ -1,4 +1,9 @@
-<--↓↓↓-------------↓↓↓-ARCHITECTURE-PROJET-↓↓↓-------------↓↓↓-->>
+<!
+Faire "pip install -r requirements.txt" dans le terminal pour avoir tous les imports utile
+!>
+
+
+<--↓↓↓-------------↓↓↓-ARCHITECTURE-PROJET-↓↓↓-------------↓↓↓-->
 API_project
 ├── entites
 │   ├── culture
@@ -30,9 +35,40 @@ API_project
 │
 ├── venv
 │
+├── .env
+│
+│
+├── doc.txt
+│
+│
+├── log.txt
+│
 ├── main.py
 │
-├── route.py
+├── requirements.txt
 │
 └── route.py
 <--↑↑↑-------------↑↑↑-ARCHITECTURE-PROJET-↑↑↑-------------↑↑↑-->
+
+###
+
+<--↓↓↓--------------↓↓↓-FONCTIONS-FICHIERS-↓↓↓-------------↓↓↓-->
+
+-> culture_api.py =>
+-> date_api.py =>
+-> elements_chimiques_api.py =>
+-> engrais_api.py =>
+-> epandre_api.py =>
+-> parcelle_api.py =>
+-> posseder_api.py =>
+-> production_api.py =>
+-> unite_api.py =>
+
+<--↑↑↑--------------↑↑↑-FONCTIONS-FICHIERS-↑↑↑-------------↑↑↑-->
+
+###
+
+<--↓↓↓---------------↓↓↓-ERREURS-REQUETES-↓↓↓--------------↓↓↓-->
+
+
+<--↑↑↑---------------↑↑↑-ERREURS-REQUETES-↑↑↑--------------↑↑↑-->
