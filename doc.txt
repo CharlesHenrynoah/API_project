@@ -1,0 +1,34 @@
+-------------ARCHITECTURE-PROJET-------------
+API_project
+├── entites
+│   ├── culture
+│   │   └── culture_api.py
+│   │
+│   ├── date
+│   │   └── date_api.py
+│   │
+│   ├── element_chimiques
+│   │   └── element_chimiques.py
+│   │
+│   ├── engrais
+│   │   └── engrais_api.py
+│   │
+│   ├── epandre
+│   │   └── epandre_api.py
+│   │
+│   ├── parcelle
+│   │   └── parcelle_api.py
+│   │
+│   ├── posseder
+│   │   └──posseder_api.py
+│   │
+│   ├── production
+│   │   └── production_api.py
+│   │
+│   └── unite
+│       └── unite_api.py
+│
+├── main.py
+│
+└── route.py
+-------------ARCHITECTURE-PROJET-------------
