@@ -6,8 +6,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, select, orm
 from sqlalchemy.orm import Session
 
-env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=env_path)
+load_dotenv()
 
 
 class Config:
