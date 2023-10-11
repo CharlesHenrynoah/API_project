@@ -54,9 +54,9 @@ class Config:
             return e
 
     @staticmethod
-    def updateData(class_to_insert, data, condition):
-        sql_req = update(class_to_insert).where(class_to_insert.ID_ENGRAIS == condition).values(data)
+    def updateData(class_to_insert, data, condition, colonne):
         try:
+            sql_req = update(class_to_insert).where(getattr(class_to_insert, colonne)== condition).values(data)
             with Session(Config.engine) as session:
                 session.execute(sql_req)
                 session.commit()
