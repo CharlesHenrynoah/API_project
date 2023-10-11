@@ -17,6 +17,6 @@ def select_test():
     result = Config.selectData(Parcelle)
     return result
 
-
 print(main())
 print(select_test())
+
