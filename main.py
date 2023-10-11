@@ -22,11 +22,11 @@ data = {
 def main():
     return Config.database_connection()
 
+table = input("Selectionner table")
 task = input("select / insert / update / delete")
 
-#if table == "Engrais":
-    #table = Engrais #test
-table = Engrais #test
+if table == "Engrais":
+    table = Engrais #test
 
 if task == "select":
     def select_test():
