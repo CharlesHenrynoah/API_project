@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 from pathlib import Path
-from sqlalchemy import create_engine, select, orm
+from sqlalchemy import create_engine, select, orm, insert
 from sqlalchemy.orm import Session
 
 load_dotenv()
@@ -38,3 +38,14 @@ class Config:
                 results.append(result.as_dict())
 
         return results
+
+    @staticmethod
+    def insertData(class_to_insert, data):
+        sql_req = insert(class_to_insert).values(data)
+        try:
+            with Session(Config.engine) as session:
+                session.execute(sql_req)
+                session.commit()
+                return "Data has been added."
+        except Exception as e:
+            return e
