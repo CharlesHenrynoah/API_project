@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 
-
 from pathlib import Path
 
 load_dotenv()
@@ -19,8 +18,9 @@ class Settings:
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "tdd")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
-
-    def requete_global(requete_execute):
+    @staticmethod
+    def test_database_connection():
+        print(Settings.POSTGRES_USER)
         try:
             conn = psycopg2.connect(
                 host=Settings.POSTGRES_SERVER,
@@ -48,3 +48,6 @@ class Settings:
 
         except Exception as e:
             return f"Erreur de connexion à la base de données : {e}"
+
+# Test de la connexion à la base de données
+test_result = Settings.test_database_connection()
