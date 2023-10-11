@@ -2,10 +2,7 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 
-from pathlib import Path
-
 load_dotenv()
-
 
 class Settings:
     PROJECT_NAME: str = "Job Board"
