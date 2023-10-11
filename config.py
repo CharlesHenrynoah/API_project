@@ -2,9 +2,7 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 
-from pathlib import Path
-env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=env_path)
+load_dotenv()
 
 class Settings:
     PROJECT_NAME:str = "Job Board"
@@ -18,7 +16,7 @@ class Settings:
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
     @staticmethod
-    def test_database_connection():
+    def test_database_connection(request):
         try:
             conn = psycopg2.connect(
                 host=Settings.POSTGRES_SERVER,
@@ -29,17 +27,15 @@ class Settings:
 
             cursor = conn.cursor()
 
-            cursor.execute('SELECT * FROM public."CULTURE";')
+            cursor.execute(request)
             rows = cursor.fetchall()
-            for row in rows:
-                print(row)
             cursor.close()
             conn.close()
 
-            return f"Connecté à PostgreSQL version :"
+            return rows
 
         except Exception as e:
             return f"Erreur de connexion à la base de données : {e}"
 
 # Test de la connexion à la base de données
-test_result = Settings.test_database_connection()
+#test_result = Settings.test_database_connection()
