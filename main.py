@@ -12,7 +12,8 @@ from classes.Unite import Unite
 from classes.Production import Production
 from config_alchemy import Config
 
-condition = 8
+#    "UN": "UPDATE4",
+#    "NOM_ENGRAIS": "4UPDATE"
 
 data = {
     "UN": "UPDATE4",
@@ -21,11 +22,11 @@ data = {
 def main():
     return Config.database_connection()
 
-table = input("Quelle table : ")
-task = input("select / insert / update")
+task = input("select / insert / update / delete")
 
-if table == "Engrais":
-    table = Engrais #test
+#if table == "Engrais":
+    #table = Engrais #test
+table = Engrais #test
 
 if task == "select":
     def select_test():
@@ -37,10 +38,12 @@ elif task == "insert":
         return result
 elif task == "update":
     def update_test():
+        condition = int(input("Donner l'ID lié au row à delete"))
         result = Config.updateData(table, data, condition)
         return result
 elif task == "delete":
     def delete_test():
+        condition = int(input("Donner l'ID lié au row à delete"))
         result = Config.deleteData(table, condition)
         return result
 
