@@ -17,16 +17,16 @@ from config_alchemy import Config
 
 data = {
     "UN": "UPDATE4",
-    "NOM_ENGRAIS": "4UPDATE"
 }
 def main():
     return Config.database_connection()
 
-table = input("Selectionner table")
+#table = input("Selectionner table")
 task = input("select / insert / update / delete")
 
-if table == "Engrais":
-    table = Engrais #test
+#if table == "Engrais":
+
+table = Engrais #test
 
 if task == "select":
     def select_test():
