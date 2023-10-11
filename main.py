@@ -1,13 +1,22 @@
-from config import Settings
-from entites.engrais.engrais_api import engrais_select, engrais_insert, engrais_update, engrais_delete
+import json
+from classes.Culture import Culture
+from classes.Date_table import DateTable
+from classes.Engrais import Engrais
+from classes.Element_chimiques import ElementChimiques
+from classes.Epandre import Epandre
+from classes.Parcelle import Parcelle
+from classes.Posseder import Posseder
+from classes.Unite import Unite
+from classes.Production import Production
+from config_alchemy import Config
 
 
-class tkt:
-    @staticmethod
-    def ttkt():
-        requete_execute = engrais_select() #MODIFIER "engrais_delete" PAR LA FONCTIONS VOULUS (ex: engrais_select, engrais_insert, engrais_update, engrais_delete)
-        result = Settings.requete_global(requete_execute)
-        return result
+def main():
+    return Config.database_connection()
+def select_test():
+    result = Config.selectData(Parcelle)
+    return result
 
 
-result = tkt.ttkt()
+print(main())
+print(select_test())
