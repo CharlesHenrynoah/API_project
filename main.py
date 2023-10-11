@@ -17,6 +17,9 @@ def select_test():
     result = Config.selectData(Parcelle)
     return result
 
+def insert_test():
+   Config.insertData(Parcelle, [{"NO_PARCELLE": 1, "SURFACE":100, "NOM_PARCELLE": "lololo", "COORDONNEES": "edededed"}])
 
 print(main())
+
 print(select_test())
