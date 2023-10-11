@@ -14,7 +14,7 @@ from config_alchemy import Config
 def main():
     return Config.database_connection()
 def select_test():
-    result = Config.selectData(Culture)
+    result = Config.selectData(Parcelle)
     return result
 
 

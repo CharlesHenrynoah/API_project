@@ -38,4 +38,4 @@ class Config:
                 result = row[0]
                 results.append(result.as_dict())
 
-        return result
+        return results
