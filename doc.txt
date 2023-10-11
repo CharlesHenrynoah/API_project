@@ -72,3 +72,18 @@ API_project
 
 
 <--↑↑↑---------------↑↑↑-ERREURS-REQUETES-↑↑↑--------------↑↑↑-->
+
+
+cursor.execute('SELECT * FROM public."ENGRAIS";')
+rows = cursor.fetchall()
+for row in rows:
+    print(row)
+
+cursor.execute(
+    'INSERT INTO public."ENGRAIS2"("ID_ENGRAIS", "UN", "NOM_ENGRAIS") VALUES (NULL, \'dede\', \'ezcez\');')
+
+cursor.execute(
+    'UPDATE public."ENGRAIS" SET "ID_ENGRAIS" = 9 WHERE "ID_ENGRAIS" = 7;', )
+
+cursor.execute(
+    'DELETE from public."ENGRAIS" WHERE "ID_ENGRAIS" = 9;', )
