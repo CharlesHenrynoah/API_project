@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 from pathlib import Path
-from sqlalchemy import create_engine, select, orm, insert
+from sqlalchemy import create_engine, select, orm, insert, update
 from sqlalchemy.orm import Session
 
 load_dotenv()
@@ -32,12 +32,15 @@ class Config:
         sql_req = select(class_to_select)
         results = []
 
-        with Session(Config.engine) as session:
-            for row in session.execute(sql_req):
-                result = row[0]
-                results.append(result.as_dict())
+        try:
+            with Session(Config.engine) as session:
+                for row in session.execute(sql_req):
+                    result = row[0]
+                    results.append(result.as_dict())
 
-        return results
+            return results
+        except Exception as e:
+            return e
 
     @staticmethod
     def insertData(class_to_insert, data):
@@ -49,3 +52,25 @@ class Config:
                 return "Data has been added."
         except Exception as e:
             return e
+
+    @staticmethod
+    def updateData(class_to_insert, data, condition):
+        sql_req = update(class_to_insert).where(class_to_insert.ID_ENGRAIS == condition).values(data)
+        try:
+            with Session(Config.engine) as session:
+                session.execute(sql_req)
+                session.commit()
+                return "Data has been modifié."
+        except Exception as e:
+            return e
+
+    @staticmethod
+    def deleteData(class_to_delete, condition):
+        with Session(Config.engine) as session:
+            item_to_delete = session.query(class_to_delete).get(condition)
+            if item_to_delete is not None:
+                session.delete(item_to_delete)
+                session.commit()
+                return "Donnée supprimée avec succès"
+            else:
+                return "Erreur : Donnée non trouvée"
