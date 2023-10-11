@@ -63,3 +63,14 @@ class Config:
                 return "Data has been modifié."
         except Exception as e:
             return e
+
+    @staticmethod
+    def deleteData(class_to_delete, condition):
+        with Session(Config.engine) as session:
+            item_to_delete = session.query(class_to_delete).get(condition)
+            if item_to_delete is not None:
+                session.delete(item_to_delete)
+                session.commit()
+                return "Donnée supprimée avec succès"
+            else:
+                return "Erreur : Donnée non trouvée"
