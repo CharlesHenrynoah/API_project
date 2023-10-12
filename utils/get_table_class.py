@@ -9,7 +9,8 @@ from classes.Posseder import Posseder
 from classes.Unite import Unite
 from classes.Production import Production
 
-
+# permet de récupérer la classe d'une table en fonction de son nom
+# exemple : get_table_class("Culture") renvoie la classe Culture
 def get_table_class(table_name):
     name_table = f"{table_name[0].upper()}{table_name[1:].lower()}"
     table_mapping = {

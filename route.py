@@ -31,7 +31,24 @@ def read_data(table: str, skip: int = 0, limit: int = 10, sort_by: Optional[str]
                     fields)
 
 
-@app.post('/insert/{table}')
+@app.post('/insert/{table}',responses={
+    200: {
+            "description": "reponse de la requête",
+            "content": {
+                "application/json": {
+                    "example": {"result": "Data has been added."}
+                }
+            },
+        },
+    400: {
+            "description": "erreur de la requête",
+            "content": {
+                "application/json": {
+                    "example": {"error": "random error"}
+                }
+            },
+    }
+})
 async def read_data(table: str, data: list[dict] | dict):
     """
     ## Insérer des données dans une table:
@@ -41,7 +58,7 @@ async def read_data(table: str, data: list[dict] | dict):
 
     exemple paramètre table UNITE
 
-    exemple de body data:
+    exemple de body data (pas besoin de mettre les colonnes qui auto increment, il est généré automatiquement):
     ```json
     [
         {
@@ -61,14 +78,53 @@ async def read_data(table: str, data: list[dict] | dict):
     {
         "result": "Data has been added."
     }
+    ```
+    ## Erreur:
+    **error: dict** = erreur de la requête
+    ```json
+    {
+        "error": "random error"
+    }
+    ```
     """
+    # traduit le paramètre "table" en une classe SQLAlchemy
     table_class = get_table_class(table)
     if table_class is None:
         return {"error": "Table not found"}
     return post_data(table_class, data)
 
-
-@app.patch('/update/{table}/{column}={condition}') # EX => @app.patch('/update/Engrais/ID_ENGRAIS=1')
+@app.patch('/update/{table}/{column}={condition}',responses={
+    200: {
+            "description": "reponse de la requête",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultat": {
+                            "UN": "12345",
+                            "ID_ENGRAIS": 3,
+                            "NOM_ENGRAIS": "Update"
+                        }
+                    }
+                }
+            },
+        },
+    400: {
+            "description": "erreur de la requête",
+            "content": {
+                "application/json": {
+                    "example":
+                        {
+                            "resultat": [
+                                "erreur",
+                                [
+                                    {}
+                                ]
+                            ]
+                        }
+                }
+            },
+    }
+}) # EX => @app.patch('/update/Engrais/ID_ENGRAIS=1')
 async def update_data(table: str, column: str, condition: int, data: dict):
     """
     ## Mettre à jour des données dans une table:
@@ -93,7 +149,7 @@ async def update_data(table: str, column: str, condition: int, data: dict):
     }
     ```
     ## Résultat:
-    **result: dict** = resultat de la requête
+    **resultat: dict** = resultat de la requête
     ```json
     {
         "resultat": {
@@ -107,9 +163,12 @@ async def update_data(table: str, column: str, condition: int, data: dict):
     table_class = get_table_class(table) # Traduit le paramètre "table" en une classe SQLAlchemy
     if table_class is None: # Si la classe n'est pas trouvée
         return {"message": f"Table non trouvée : {table} n'existe pas"}
+    # Si la classe est trouvée on appelle la fonction updateData de config_alchemy.py
+    # qui va mettre à jour les données
     result = Config.updateData(table_class, data, column, condition)
     str_variable = "resultat : "
     tuple_as_str = str(result)
+    # On transforme le tuple en string pour pouvoir le comparer
     result_print = str_variable + tuple_as_str
     if result_print == "resultat : None":
         print("<<<<<== Échec de la modification, vérifiez si " + column + " a bien une ligne avec pour valeur : " + str(
@@ -123,6 +182,49 @@ async def update_data(table: str, column: str, condition: int, data: dict):
 
 
 
-@app.delete('/delete/{table}/{condition_column}/{condition_value}')
+@app.delete('/delete/{table}/{condition_column}/{condition_value}',responses={
+    200: {
+            "description": "reponse de la requête",
+            "content": {
+                "application/json": {
+                    "example": "Erreur : Donnée non trouvée"
+                }
+            },
+        },
+    400: {
+            "description": "erreur de la requête",
+            "content": {
+                "application/json": {
+                    "example":"Erreur : Donnée non trouvée"
+                }
+            },
+    }
+})
 def delete_specific_data(table: str, condition_column: str, condition_value: str):
+    """
+    ## Supprimer des données dans une table:
+    **Param table: string** = nom de la table à modifier.
+
+    **Param condition_column: string** = nom de la colonne pour selectionner la ligne de comparaison.
+
+    **Param condition_value: string** = valeur a comparer avec la colonne.
+
+    exemple paramètre table ENGRAIS
+
+    exemple paramètre condition_column ID_ENGRAIS
+
+    exemple paramètre condition_value 1 (ID_ENGRAIS = 1)
+
+    ## Résultat:
+    **result: string** = resultat de la requête
+    ```json
+    "Donnée supprimée avec succès"
+    ```
+
+    ## Erreur:
+    **error: string** = erreur de la requête
+    ```json
+    "Erreur : Donnée non trouvée"
+    ```
+    """
     return delete_data(table, condition_column, condition_value)
