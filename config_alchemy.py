@@ -4,19 +4,21 @@ from dotenv import load_dotenv
 import psycopg2
 from pathlib import Path
 from sqlalchemy import create_engine, select, orm, insert, update
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 load_dotenv()
 
 
 class Config:
-    engine = None
+
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", 5432)  # default postgres port is 5432
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "tdd")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
+    engine = create_engine(DATABASE_URL)
+    Session = sessionmaker(bind=engine)
 
     @staticmethod
     def database_connection():
@@ -53,14 +55,19 @@ class Config:
         except Exception as e:
             return e
 
+    # Dans votre config.py
     @staticmethod
-    def updateData(class_to_insert, data, condition, colonne):
+    def updateData(class_to_insert, data, condition):
         try:
-            sql_req = update(class_to_insert).where(getattr(class_to_insert, colonne)== condition).values(data)
-            with Session(Config.engine) as session:
+            sql_req = update(class_to_insert).where(getattr(class_to_insert, "ID_ENGRAIS") == condition).values(data)
+            with Config.Session() as session:
                 session.execute(sql_req)
                 session.commit()
-                return "Data has been modifié."
+
+                updated_data = session.query(class_to_insert).filter(
+                    getattr(class_to_insert, "ID_ENGRAIS") == condition).first()
+                return updated_data
+
         except Exception as e:
             return e
 

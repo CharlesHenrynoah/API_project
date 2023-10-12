@@ -5,6 +5,7 @@ from controllers.get_data import get_data
 from controllers.post_data import post_data
 from controllers.patch_data import UpdateDataModel, patch_data
 from controllers.delete_data import delete_data
+from utils.get_table_class import get_table_class
 app = FastAPI()
 
 
@@ -22,15 +23,18 @@ def read_data(table: str):
     return post_data(table)
 
 
-# patch.py
+@app.patch('/update/{table}/{condition}')
+async def update_data(table: str, condition: int, data: dict):
+    table_class = get_table_class(table)
+    if table_class is None:
+        return {"message": "Table non trouvée"}
+    result = Config.updateData(table_class, data, condition)
+    print(table_class)
+    print(data)
+    print(condition)
+    print(result)
+    return {"message": result}
 
-
-app = FastAPI()
-
-@app.patch('/update/{table}/{condition}', response_model=UpdateDataModel)
-async def update_data(table: str, condition: int, data: UpdateDataModel):
-    result = patch_data(table, condition, data)
-    return result
 
 
 
