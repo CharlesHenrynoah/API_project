@@ -57,19 +57,19 @@ class Config:
 
     # Dans votre config.py
     @staticmethod
-    def updateData(class_to_insert, data, condition):
+    def updateData(class_to_insert, data, column, condition):
         try:
-            sql_req = update(class_to_insert).where(getattr(class_to_insert, "ID_ENGRAIS") == condition).values(data)
+            sql_req = update(class_to_insert).where(getattr(class_to_insert, column) == condition).values(data)
             with Config.Session() as session:
                 session.execute(sql_req)
                 session.commit()
 
                 updated_data = session.query(class_to_insert).filter(
-                    getattr(class_to_insert, "ID_ENGRAIS") == condition).first()
+                    getattr(class_to_insert, column) == condition).first()
                 return updated_data
 
         except Exception as e:
-            return e
+            return "erreur", {e}
 
     @staticmethod
     def deleteData(class_to_delete, condition):

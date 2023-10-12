@@ -70,6 +70,17 @@ API_project
 
 <--↓↓↓---------------↓↓↓-ERREURS-REQUETES-↓↓↓--------------↓↓↓-->
 
+307 Temporary Redirect
+==> Méthode changé en GET pour obtenir les info de l'erreur
+
+404 Not Found "PATCH /update/Engrais/1 "
+==> URL mal écrit
+
+422 Unprocessable Entity
+==> Requete API mal écrite
+    ->@app.patch('/update/{table}') ERREUR
+    ->@app.patch('/update/{table}/{condition}') VALIDE
+
 
 <--↑↑↑---------------↑↑↑-ERREURS-REQUETES-↑↑↑--------------↑↑↑-->
 

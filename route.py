@@ -23,18 +23,17 @@ def read_data(table: str):
     return post_data(table)
 
 
-@app.patch('/update/{table}/{condition}')
-async def update_data(table: str, condition: int, data: dict):
-    table_class = get_table_class(table)
-    if table_class is None:
-        return {"message": "Table non trouvée"}
-    result = Config.updateData(table_class, data, condition)
-    print(table_class)
-    print(data)
-    print(condition)
-    print(result)
-    return {"message": result}
+from fastapi import FastAPI
 
+app = FastAPI()
+
+@app.patch('/update/{table}/{column}={condition}')
+async def update_data(table: str, column: str, condition: int, data: dict):
+    table_class = get_table_class(table) # Traduit le paramètre "table" en une classe SQLAlchemy
+    if table_class is None: # Si la classe n'est pas trouvée
+        return {"message": f"Table non trouvée : {table} n'existe pas"}
+    result = Config.updateData(table_class, data, column, condition)
+    return {"message": result}
 
 
 
