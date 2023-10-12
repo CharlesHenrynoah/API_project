@@ -1,5 +1,7 @@
 import json
 import os
+from sys import exc_info
+
 from dotenv import load_dotenv
 import psycopg2
 from pathlib import Path
@@ -10,14 +12,13 @@ load_dotenv()
 
 
 class Config:
-    engine = None
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", 5432)  # default postgres port is 5432
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "tdd")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
-
+    engine = create_engine(DATABASE_URL)
     @staticmethod
     def database_connection():
         Config.engine = create_engine(Config.DATABASE_URL, echo=False)
@@ -44,14 +45,23 @@ class Config:
 
     @staticmethod
     def insertData(class_to_insert, data):
+
+        if not data:
+            return {"error": "No data provided"}
+
         sql_req = insert(class_to_insert).values(data)
         try:
             with Session(Config.engine) as session:
                 session.execute(sql_req)
                 session.commit()
-                return "Data has been added."
+                return {"result": "Data has been added."}
+
         except Exception as e:
-            return e
+            error = type(e)
+            print(error.__name__)
+            if error.__name__ == "CompileError":
+                return {"error": "Data key error"}
+            return {"error": str(e)}
 
     @staticmethod
     def updateData(class_to_insert, data, condition, colonne):

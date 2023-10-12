@@ -77,7 +77,9 @@ API_project
 
 <--↓↓↓-----------------↓↓↓-REQUETES-SQL-↓↓↓----------------↓↓↓-->
 
-
+Config.insertData() => Insertion des données dans la base de données avec:
+parametres: nom de la table
+body: valeurs à insérer
 
 <--↑↑↑----------------↑↑↑-REQUETES-SQL-↑↑↑----------------↑↑↑-->
 
