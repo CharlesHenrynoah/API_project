@@ -2,11 +2,21 @@ import json
 import os
 from sys import exc_info
 
+import datetime
+
 from dotenv import load_dotenv
 import psycopg2
 from pathlib import Path
-from sqlalchemy import create_engine, select, orm, insert, update
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import create_engine, select, orm, insert, update, desc, asc, text, and_
+from sqlalchemy.orm import Session,sessionmaker
+from starlette import status
+from starlette.responses import JSONResponse
+
+from classes.Culture import Culture
+from utils.filters import apply_filters
+from utils.get_fields import get_fields
+from utils.order_by import order_by
+from utils.to_dict import to_dict
 
 load_dotenv()
 
@@ -36,19 +46,36 @@ class Config:
             return f"Erreur de connexion à la base de données : {e}"
 
     @staticmethod
-    def selectData(class_to_select):
-        sql_req = select(class_to_select)
-        results = []
-
+    def selectData(class_to_select, skip, limit, filters, sort_by, fields):
         try:
-            with Session(Config.engine) as session:
-                for row in session.execute(sql_req):
-                    result = row[0]
-                    results.append(result.as_dict())
+            results = []
+            # Gestion du tri
+            order_by_clauses = order_by(sort_by, class_to_select)
 
-            return results
+            # Gestion des champs
+            fields_to_get = get_fields(fields, class_to_select)
+
+            #Gestion des filtres
+            filter_clauses = apply_filters(filters,class_to_select)
+
+            # Requête et pagination
+            sql_req = select(*fields_to_get).offset(skip).limit(limit)
+            if order_by_clauses:
+                sql_req = sql_req.order_by(*order_by_clauses)
+            if filter_clauses:
+                sql_req = sql_req.where(and_(*filter_clauses))
+
+            with Session(Config.engine) as session:
+                for row in session.execute(sql_req).all():
+                    if fields:
+                        results.append(to_dict(row, fields_to_get))
+                    else:
+                        results.append(row[0].as_dict())
+
+            return {"results": results}
         except Exception as e:
-            return e
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                                content={"error": str(e)})
 
     @staticmethod
     # fonction pour insérer des données dans la base de données

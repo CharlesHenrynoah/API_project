@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import FastAPI
 
 from pydantic import BaseModel
@@ -16,12 +18,19 @@ app = FastAPI(
 
 
 def main():
-    print(Config.database_connection())
+    return Config.database_connection()
+
+
+print(main())
 
 
 @app.get('/select/{table}')
-def read_data(table: str):
-    return get_data(table)
+def read_data(table: str, skip: int = 0, limit: int = 10, sort_by: Optional[str] = None,
+              filters: Optional[str] = None,
+              fields: Optional[str] = None):
+    return get_data(table, skip, limit, sort_by,
+                    filters,
+                    fields)
 
 
 @app.post('/insert/{table}',responses={
