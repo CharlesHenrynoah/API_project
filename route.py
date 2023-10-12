@@ -72,6 +72,6 @@ async def update_data(table: str, column: str, condition: int, data: dict):
 
 
 
-@app.delete('/delete/{table}')
-def read_data(table: str):
-    return delete_data(table)
+@app.delete('/delete/{table}/{condition_column}/{condition_value}')
+def delete_specific_data(table: str, condition_column: str, condition_value: str):
+    return delete_data(table, condition_column, condition_value)

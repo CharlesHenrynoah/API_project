@@ -12,11 +12,13 @@ load_dotenv()
 
 
 class Config:
+
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
-    POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", 5432)  # default postgres port is 5432
-    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "tdd")
+    # default postgres port is 5432
+    POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", 5433)
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "culture")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
     engine = create_engine(DATABASE_URL)
     Session = sessionmaker(bind=engine)
@@ -69,6 +71,10 @@ class Config:
     @staticmethod
     def updateData(class_to_insert, data, column, condition):
         try:
+            sql_req = update(class_to_insert).where(
+                getattr(class_to_insert, colonne) == condition).values(data)
+            with Session(Config.engine) as session:
+
             sql_req = update(class_to_insert).where(getattr(class_to_insert, column) == condition).values(data)
             with Config.Session() as session:
                 session.execute(sql_req)
