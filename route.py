@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from sqlalchemy import null
 
 from config_alchemy import Config
 from controllers.get_data import get_data
@@ -27,13 +28,31 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.patch('/update/{table}/{column}={condition}')
+@app.patch('/update/{table}/{column}={condition}') # EX => @app.patch('/update/Engrais/ID_ENGRAIS=1')
 async def update_data(table: str, column: str, condition: int, data: dict):
+    '''
+
+    :param table: 
+    :param column:
+    :param condition:
+    :param data:
+    :return:
+    '''
     table_class = get_table_class(table) # Traduit le paramètre "table" en une classe SQLAlchemy
     if table_class is None: # Si la classe n'est pas trouvée
         return {"message": f"Table non trouvée : {table} n'existe pas"}
     result = Config.updateData(table_class, data, column, condition)
-    return {"message": result}
+    str_variable = "resultat : "
+    tuple_as_str = str(result)
+    result_print = str_variable + tuple_as_str
+    if result_print == "resultat : None":
+        print("<<<<<== Échec de la modification, vérifiez si " + column + " a bien une ligne avec pour valeur : " + str(
+            condition))
+    else :
+        print ("resultat : " + result_print)
+
+
+    return {"resultat": result}
 
 
 

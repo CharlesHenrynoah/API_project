@@ -77,10 +77,12 @@ API_project
 ==> URL mal écrit
 
 422 Unprocessable Entity
-==> Requete API mal écrite
+==> Requete API mal écrite ou JSON non valide
     ->@app.patch('/update/{table}') ERREUR
     ->@app.patch('/update/{table}/{condition}') VALIDE
 
+    ->"UN": test ERREUR
+    ->"UN": "test" VALIDE
 
 <--↑↑↑---------------↑↑↑-ERREURS-REQUETES-↑↑↑--------------↑↑↑-->
 
