@@ -38,6 +38,7 @@ class Config:
     @staticmethod
     # fonction pour se connecter à la base de données
     def database_connection():
+        Config.engine = create_engine(Config.DATABASE_URL, echo=False)
         try:
             Config.engine.connect()
             return f'Connecté à PostgresSQL'
