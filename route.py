@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import FastAPI
 
 from pydantic import BaseModel
@@ -12,7 +10,9 @@ from controllers.patch_data import UpdateDataModel, patch_data
 from controllers.delete_data import delete_data
 from utils.get_table_class import get_table_class
 
-app = FastAPI()
+app = FastAPI(
+    title="Agricole API",
+)
 
 
 def main():
@@ -33,15 +33,35 @@ def read_data(table: str, skip: int = 0, limit: int = 10, sort_by: Optional[str]
 
 @app.post('/insert/{table}')
 async def read_data(table: str, data: list[dict] | dict):
-    '''
-    :param table: string
+    """
+    ## Insérer des données dans une table:
+    **Param table: string** = nom de la table.
 
+    **Body data: list[dict] ou dict** = données à insérer.
 
-    :body data: list[dict] ou dict
+    exemple paramètre table UNITE
 
+    exemple de body data:
+    ```json
+    [
+        {
+            "UN": "kg"
+        }
+    ]
 
-    :return: dict
-    '''
+    ou
+
+    {
+        "UN": "kg"
+    }
+    ```
+    ## Résultat:
+    **result: dict** = resultat de la requête
+    ```json
+    {
+        "result": "Data has been added."
+    }
+    """
     table_class = get_table_class(table)
     if table_class is None:
         return {"error": "Table not found"}
@@ -50,14 +70,40 @@ async def read_data(table: str, data: list[dict] | dict):
 
 @app.patch('/update/{table}/{column}={condition}') # EX => @app.patch('/update/Engrais/ID_ENGRAIS=1')
 async def update_data(table: str, column: str, condition: int, data: dict):
-    '''
+    """
+    ## Mettre à jour des données dans une table:
+    **Param table: string** = nom de la table à modifier.
 
-    :param table: 
-    :param column:
-    :param condition:
-    :param data:
-    :return:
-    '''
+    **Param column: string** = nom de la colonne pour selecionner la ligne de comparaison.
+
+    **Param condition: int** = valeur a comparer avec la colonne.
+
+    **Body data: dict** = données à modifier.
+
+    exemple paramètre table ENGRAIS
+
+    exemple paramètre column ID_ENGRAIS
+
+    exemple paramètre condition 1 (ID_ENGRAIS = 1)
+
+    exemple de body data:
+    ```json
+    {
+        "NOM_ENGRAIS": "engrais 1"
+    }
+    ```
+    ## Résultat:
+    **result: dict** = resultat de la requête
+    ```json
+    {
+        "resultat": {
+            "NOM_ENGRAIS": "Update",
+            "UN": "lol",
+            "ID_ENGRAIS": 1
+        }
+    }
+    ```
+    """
     table_class = get_table_class(table) # Traduit le paramètre "table" en une classe SQLAlchemy
     if table_class is None: # Si la classe n'est pas trouvée
         return {"message": f"Table non trouvée : {table} n'existe pas"}

@@ -105,8 +105,7 @@ class Config:
                 session.execute(sql_req)
                 session.commit()
 
-                updated_data = session.query(class_to_insert).filter(
-                    getattr(class_to_insert, column) == condition).first()
+                updated_data = session.query(class_to_insert).filter(getattr(class_to_insert, column) == condition).first()
                 return updated_data
 
         except Exception as e:
