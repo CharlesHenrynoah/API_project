@@ -1,5 +1,7 @@
 import json
 import os
+from sys import exc_info
+
 from dotenv import load_dotenv
 import psycopg2
 from pathlib import Path
@@ -10,7 +12,6 @@ load_dotenv()
 
 
 class Config:
-
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
@@ -46,14 +47,23 @@ class Config:
 
     @staticmethod
     def insertData(class_to_insert, data):
+
+        if not data:
+            return {"error": "No data provided"}
+
         sql_req = insert(class_to_insert).values(data)
         try:
             with Session(Config.engine) as session:
                 session.execute(sql_req)
                 session.commit()
-                return "Data has been added."
+                return {"result": "Data has been added."}
+
         except Exception as e:
-            return e
+            error = type(e)
+            print(error.__name__)
+            if error.__name__ == "CompileError":
+                return {"error": "Data key error"}
+            return {"error": str(e)}
 
     # Dans votre config.py
     @staticmethod

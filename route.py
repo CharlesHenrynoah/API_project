@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+
+from pydantic import BaseModel
 from sqlalchemy import null
 
 from config_alchemy import Config
@@ -7,6 +9,7 @@ from controllers.post_data import post_data
 from controllers.patch_data import UpdateDataModel, patch_data
 from controllers.delete_data import delete_data
 from utils.get_table_class import get_table_class
+
 app = FastAPI()
 
 
@@ -20,8 +23,20 @@ def read_data(table: str):
 
 
 @app.post('/insert/{table}')
-def read_data(table: str):
-    return post_data(table)
+async def read_data(table: str, data: list[dict] | dict):
+    '''
+    :param table: string
+
+
+    :body data: list[dict] ou dict
+
+
+    :return: dict
+    '''
+    table_class = get_table_class(table)
+    if table_class is None:
+        return {"error": "Table not found"}
+    return post_data(table_class, data)
 
 
 from fastapi import FastAPI
