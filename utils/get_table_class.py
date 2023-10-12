@@ -11,6 +11,7 @@ from classes.Production import Production
 
 
 def get_table_class(table_name):
+    name_table = f"{table_name[0].upper()}{table_name[1:].lower()}"
     table_mapping = {
         "Culture": Culture,
         "Date_table": DateTable,
@@ -22,7 +23,7 @@ def get_table_class(table_name):
         "Unite": Unite,
         "Production": Production
     }
-    return table_mapping.get(table_name, None)
+    return table_mapping.get(name_table, None)
 
 
 
