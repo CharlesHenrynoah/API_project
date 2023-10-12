@@ -1,0 +1,4 @@
+GET => 0
+POST => 0
+PATCH => 5
+DELETE => 0

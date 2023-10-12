@@ -73,21 +73,48 @@ class Config:
             with Config.Session() as session:
                 session.execute(sql_req)
                 session.commit()
-
                 updated_data = session.query(class_to_insert).filter(
                     getattr(class_to_insert, column) == condition).first()
                 return updated_data
-
         except Exception as e:
-            return "erreur", {e}
+            return "erreur", str(e)
 
     @staticmethod
     def deleteData(class_to_delete, condition):
-        with Session(Config.engine) as session:
+        with Config.Session() as session:
             item_to_delete = session.query(class_to_delete).get(condition)
             if item_to_delete is not None:
                 session.delete(item_to_delete)
                 session.commit()
+                increment_and_log_api_counter('DELETE')
                 return "Donnée supprimée avec succès"
             else:
                 return "Erreur : Donnée non trouvée"
+
+def increment_and_log_api_counter(request_method):
+    # Lire les compteurs actuels à partir du fichier
+    counters = {'GET': 0, 'POST': 0, 'PATCH': 0, 'DELETE': 0}
+
+    try:
+        with open("log.txt", "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                parts = line.strip().split(" => ")
+                if len(parts) == 2:
+                    method, count = parts[0], int(parts[1])
+                    if method in counters:
+                        counters[method] = count
+    except (FileNotFoundError, ValueError):
+        pass
+
+    # Incrémenter le compteur pour la méthode de la requête actuelle
+    if request_method in counters:
+        counters[request_method] += 1
+
+    # Écrire les compteurs mis à jour dans le fichier
+    with open("log.txt", "w") as file:
+        for method, count in counters.items():
+            file.write(f"{method} => {count}\n")
+
+    # Retourner le compteur mis à jour pour la méthode de la requête actuelle
+    return counters[request_method]

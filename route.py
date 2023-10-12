@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from sqlalchemy import null
 
-from config_alchemy import Config
+from config_alchemy import Config, increment_and_log_api_counter
 from controllers.get_data import get_data
 from controllers.post_data import post_data
 from controllers.patch_data import UpdateDataModel, patch_data
@@ -64,6 +64,7 @@ async def update_data(table: str, column: str, condition: int, data: dict):
         print("<<<<<== Échec de la modification, vérifiez si " + column + " a bien une ligne avec pour valeur : " + str(
             condition))
     else :
+        increment_and_log_api_counter('PATCH')
         print ("resultat : " + result_print)
 
 
