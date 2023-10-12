@@ -1,10 +1,12 @@
 import json
 import os
+from sys import exc_info
+
 from dotenv import load_dotenv
 import psycopg2
 from pathlib import Path
 from sqlalchemy import create_engine, select, orm, insert, update
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 load_dotenv()
 
@@ -19,6 +21,7 @@ class Config:
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "culture")
     DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
     engine = create_engine(DATABASE_URL)
+    Session = sessionmaker(bind=engine)
 
     @staticmethod
     def database_connection():
@@ -46,26 +49,43 @@ class Config:
 
     @staticmethod
     def insertData(class_to_insert, data):
+
+        if not data:
+            return {"error": "No data provided"}
+
         sql_req = insert(class_to_insert).values(data)
         try:
             with Session(Config.engine) as session:
                 session.execute(sql_req)
                 session.commit()
-                return "Data has been added."
-        except Exception as e:
-            return e
+                return {"result": "Data has been added."}
 
+        except Exception as e:
+            error = type(e)
+            print(error.__name__)
+            if error.__name__ == "CompileError":
+                return {"error": "Data key error"}
+            return {"error": str(e)}
+
+    # Dans votre config.py
     @staticmethod
-    def updateData(class_to_insert, data, condition, colonne):
+    def updateData(class_to_insert, data, column, condition):
         try:
             sql_req = update(class_to_insert).where(
                 getattr(class_to_insert, colonne) == condition).values(data)
             with Session(Config.engine) as session:
+
+            sql_req = update(class_to_insert).where(getattr(class_to_insert, column) == condition).values(data)
+            with Config.Session() as session:
                 session.execute(sql_req)
                 session.commit()
-                return "Data has been modifié."
+
+                updated_data = session.query(class_to_insert).filter(
+                    getattr(class_to_insert, column) == condition).first()
+                return updated_data
+
         except Exception as e:
-            return e
+            return "erreur", {e}
 
     @staticmethod
     def deleteData(class_to_delete, condition):
