@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import FastAPI
 
 from pydantic import BaseModel
@@ -14,12 +16,19 @@ app = FastAPI()
 
 
 def main():
-    print(Config.database_connection())
+    return Config.database_connection()
+
+
+print(main())
 
 
 @app.get('/select/{table}')
-def read_data(table: str):
-    return get_data(table)
+def read_data(table: str, skip: int = 0, limit: int = 10, sort_by: Optional[str] = None,
+              filters: Optional[str] = None,
+              fields: Optional[str] = None):
+    return get_data(table, skip, limit, sort_by,
+                    filters,
+                    fields)
 
 
 @app.post('/insert/{table}')
@@ -38,10 +47,6 @@ async def read_data(table: str, data: list[dict] | dict):
         return {"error": "Table not found"}
     return post_data(table_class, data)
 
-
-from fastapi import FastAPI
-
-app = FastAPI()
 
 @app.patch('/update/{table}/{column}={condition}') # EX => @app.patch('/update/Engrais/ID_ENGRAIS=1')
 async def update_data(table: str, column: str, condition: int, data: dict):

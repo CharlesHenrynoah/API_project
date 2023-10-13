@@ -15,16 +15,17 @@ class BaseModel(Base):
     def __tablename__(cls):
         return cls.__name__.upper()
 
-    def as_dict(self):
+    def as_dict(self, fields=None):
         dict_class = {}
+
         for c in self.__table__.columns:
-            isinstance(getattr(self, c.name), datetime.date)
-            if isinstance(getattr(self, c.name), datetime.date):
-                dict_class[c.name] = getattr(self, c.name).strftime('%Y-%m-%d')
-            elif isinstance(getattr(self, c.name), str):
-                dict_class[c.name] = getattr(self, c.name).strip()
-            elif isinstance(getattr(self, c.name), decimal.Decimal):
-                dict_class[c.name] = float(getattr(self, c.name))
+            value = getattr(self, c.name)
+            if isinstance(value, datetime.date):
+                dict_class[c.name] = value.strftime('%Y-%m-%d')
+            elif isinstance(value, str):
+                dict_class[c.name] = value.strip()
+            elif isinstance(value, decimal.Decimal):
+                dict_class[c.name] = float(value)
             else:
-                dict_class[c.name] = getattr(self, c.name)
+                dict_class[c.name] = value
         return dict_class
