@@ -20,7 +20,7 @@ def get_data(table: str, skip: int = 0, limit: int = 1, sort_by: Optional[str] =
     sanitized_filters = None
     class_table = get_table_class(sanitize(table))
     if filters:
-        sanitized_filters = sanitize(filters.upper())
+        sanitized_filters = sanitize(filters)
     if fields:
         sanitized_fields = sanitize(fields.upper())
     if sort_by:
@@ -28,5 +28,5 @@ def get_data(table: str, skip: int = 0, limit: int = 1, sort_by: Optional[str] =
     if class_table is None:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
                             content={"message": f"Table non trouvée : {table} n'existe pas"})
-    result = Config.selectData(class_table, skip, limit, sanitized_filters, sanitized_sort, sanitized_fields)
+    result = Config.selectData(class_table,  skip, limit, sanitized_filters, sanitized_sort, sanitized_fields)
     return result
