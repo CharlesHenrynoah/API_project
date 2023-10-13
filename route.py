@@ -171,7 +171,7 @@ async def read_data(table: str, data: list[dict] | dict):
     # traduit le paramètre "table" en une classe SQLAlchemy
     table_class = get_table_class(table)
     if table_class is None:
-        logCompteur('POST', "R")
+        logCompteur('POST', "R", "Table not found")
         return {"error": "Table not found"}
     return post_data(table_class, data)
 
