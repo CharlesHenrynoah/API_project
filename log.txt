@@ -1,0 +1,16 @@
+----Compteur log----
+
+GET => 0
+POST => 0
+PATCH => 5
+DELETE => 0
+
+GET => 0
+POST => 0
+PATCH => 4
+DELETE => 0
+----Historique des requetes----
+
+2023-10-13 13:28:20.885230 => PATCH REFUSÉ
+2023-10-13 13:28:20.885230 => PATCH REFUSÉ
+2023-10-13 13:28:20.885230 => PATCH VALIDE

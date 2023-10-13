@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from sqlalchemy import null
 
-from config_alchemy import Config
+from config_alchemy import Config, logCompteur
 from controllers.get_data import get_data
 from controllers.post_data import post_data
 from controllers.patch_data import UpdateDataModel, patch_data
@@ -252,9 +252,11 @@ async def update_data(table: str, column: str, condition: int, data: dict):
     # On transforme le tuple en string pour pouvoir le comparer
     result_print = str_variable + tuple_as_str
     if result_print == "resultat : None":
+        logCompteur('PATCH', "R")
         print("<<<<<== Échec de la modification, vérifiez si " + column + " a bien une ligne avec pour valeur : " + str(
             condition))
     else :
+        logCompteur('PATCH', "V")
         print ("resultat : " + result_print)
 
 

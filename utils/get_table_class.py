@@ -22,7 +22,7 @@ def get_table_class(table_name):
         "Parcelle": Parcelle,
         "Posseder": Posseder,
         "Unite": Unite,
-        "Production": Production
+        "Production": Production,
     }
     return table_mapping.get(name_table, None)
 
