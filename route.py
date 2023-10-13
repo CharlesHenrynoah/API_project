@@ -95,6 +95,7 @@ async def read_data(table: str, data: list[dict] | dict):
         return {"error": "Table not found"}
     return post_data(table_class, data)
 
+
 @app.patch('/update/{table}/{column}={condition}',responses={
     200: {
             "description": "reponse de la requête",
