@@ -1,7 +1,7 @@
 import datetime
 import decimal
 
-
+# permet de transformer le résultat de la requête en dictionnaire
 def to_dict(row, fields_to_get):
     dict_result = {}
     for n in range(len(row)):
