@@ -1,16 +1,15 @@
 ----Compteur log----
 
 GET => 0
-POST => 0
-PATCH => 5
-DELETE => 0
+POST => 2
+PATCH => 1
+DELETE => 2
 
 GET => 0
-POST => 0
-PATCH => 4
-DELETE => 0
+POST => 2
+PATCH => 1
+DELETE => 1
 ----Historique des requetes----
 
-2023-10-13 13:28:20.885230 => PATCH REFUSÉ
-2023-10-13 13:28:20.885230 => PATCH REFUSÉ
-2023-10-13 13:28:20.885230 => PATCH VALIDE
+2023-10-13 14:01:31.258496 => DELETE None | REFUSÉ
+2023-10-13 14:01:31.258496 => DELETE <classes.Engrais.Engrais object at 0x106ea31d0> | VALIDE
