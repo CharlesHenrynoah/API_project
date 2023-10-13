@@ -90,7 +90,7 @@ class Config:
 
         if not data:
             logCompteur('POST', "R")
-            return {"error": "No data provided"}
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "No data provided"})
 
         sql_req = insert(class_to_insert).values(data)
         # retourn le résultat de la requête
@@ -100,7 +100,7 @@ class Config:
                 session.execute(sql_req)
                 session.commit()
                 logCompteur("POST", "V", sql_req)
-                return {"result": "Data has been added."}
+                return JSONResponse(status_code=status.HTTP_201_CREATED, content={"result": "Data has been added."})
 
         # si la requête a échoué, le résultat sera {"error": "le message d'erreur"}
         # verifiez le type d'erreur pour savoir ce qui s'est mal passé
@@ -109,10 +109,10 @@ class Config:
             logCompteur('POST', "R", error.__name__)
             print(error.__name__)
             if error.__name__ == "CompileError":
-                return {"error": "Data key error"}
+                return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "Data key error"})
             if error.__name__ == "IntegrityError":
-                return {"error": "There was a foreign key violation or data duplication."}
-            return {"error": str(e)}
+                return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "There was a foreign key violation or data duplication."})
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": str(e)})
 
     # Dans votre config.py
     @staticmethod
@@ -130,7 +130,7 @@ class Config:
                 logCompteur('PATCH', "V", sql_req)
                 return updated_data
         except Exception as e:
-            return "erreur", str(e)
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"erreur": str(e)})
 
     @staticmethod
     # fonction pour supprimer des données dans la base de données
@@ -140,9 +140,10 @@ class Config:
             if item_to_delete is not None:
                 session.delete(item_to_delete)
                 session.commit()
-                return "Donnée supprimée avec succès"
+                return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={
+                    "error": "Donnée supprimée avec succès"})
             else:
-                return "Erreur : Donnée non trouvée"
+                return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error" : "Donnée non trouvée"})
 
 
 from datetime import datetime
