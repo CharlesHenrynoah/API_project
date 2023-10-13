@@ -1,4 +1,5 @@
 from sqlalchemy import func
+# toutes les opérations de comparaison possibles
 COMPARATORS = {
     '==': '__eq__',
     '>=': '__ge__',
@@ -7,7 +8,7 @@ COMPARATORS = {
     '<': '__lt__'
 }
 
-
+# permet de récupérer le nom de la colonne, l'opérateur et la valeur d'un filtre
 def parse_filter(filter_str: str):
     for comp, comp_func in COMPARATORS.items():
         if comp in filter_str:
@@ -15,7 +16,9 @@ def parse_filter(filter_str: str):
             return field.strip().upper(), comp_func, value.strip()
     return None, None, None
 
-
+# permet de récupérer les clauses de filtres
+# exemple : apply_filters("ID_CULTURE==1,DATE_DEBUT>=2021-01-01", Culture)
+# renvoie [Culture.ID_CULTURE == 1, Culture.DATE_DEBUT >= '2021-01-01']
 def apply_filters(filters, class_to_select):
     if filters:
         filter_clauses = []

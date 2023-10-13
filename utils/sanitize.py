@@ -1,6 +1,8 @@
 import re
 
-
+# fonction pour nettoyer les données
+# exemple : sanitize("  Hello  World  ")
+# renvoie "Hello World"
 def sanitize(unsafe_str):
     allowed_range = set(range(32, 127))
     safe_str = ''
