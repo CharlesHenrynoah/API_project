@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 from sys import exc_info
 
 from dotenv import load_dotenv
@@ -90,29 +91,55 @@ class Config:
             else:
                 return "Erreur : Donnée non trouvée"
 
+
+from datetime import datetime
+
+compteurV = {'GET': 0, 'POST': 0, 'PATCH': 0, 'DELETE': 0}  # Compteur
+compteurR = {'GET': 0, 'POST': 0, 'PATCH': 0, 'DELETE': 0}  # Compteur
+historique_log = []
+dateTime = datetime.now()
+
 def logCompteur(log_ajout, statut):
-    compteur = {'GET': 0, 'POST': 0, 'PATCH': 0, 'DELETE': 0} #Compteur
+    global historique_log
 
     try:
-        with open("log.txt", "r") as file: #Ouvre le log.txt
-            lignes = file.readlines() #variable lignes recup toutes les lignes du txt
+        with open("log.txt", "r") as file:
+            lignes = file.readlines()
             for ligne in lignes:
-                compteur_app = ligne.strip().split(" => ") #Variable compteur_app qui récupere les valeurs de la ligne, séparés par =>
-                if len(compteur_app) == 2: #Regarde si la ligne est bien en 3 "mots" (app => 0) et donc pas corrompu
-                    app_type, compte = compteur_app[0], int(compteur_app[1]) #Permet de recuperer la valeur 0 (app_type) et 1 (compte) de la ligne
-                    if app_type in compteur:
-                        compteur[app_type] = compte #Variable Compteur qui prends la valeur de app_type et compte
-
-    except (FileNotFoundError, ValueError): #Erreur si txt pas trouvé ou mauvaise valeur
+                compteur_app = ligne.strip().split(" => ")
+                if len(compteur_app) == 2:
+                    app_type, compte = compteur_app[0], int(compteur_app[1])
+                    if app_type in compteurV and statut == "V":
+                        compteurV[app_type] = compte
+                    if app_type in compteurR and statut == "R":
+                        compteurR[app_type] = compte
+    except (FileNotFoundError, ValueError):
         pass
 
+    if log_ajout in compteurV and statut == "V":
+        compteurV[log_ajout] += 1
+        historique_log.append(f"{dateTime} => {log_ajout} VALIDE")
+        print("V +1")
+    if log_ajout in compteurR and statut == "R":
+        compteurR[log_ajout] += 1
+        historique_log.append(f"{dateTime} => {log_ajout} REFUSÉ")
+        print("R +1")
 
-    if log_ajout in compteur:
-        compteur[log_ajout] += 1 #Ajoute +1 a la variable compteur
+    # Ouvrir le fichier en mode écriture ici, après les mises à jour
+    with open("log.txt", "w") as file:
+        file.write(f"----Compteur log----\n\n")
+        for app_type, compteV in compteurV.items():
+            file.write(f"{app_type} => {compteV}\n")
+        file.write("\n")
+        for app_type, compteR in compteurR.items():
+            file.write(f"{app_type} => {compteR}\n")
+        file.write(f"----Historique des requetes----\n\n")
+        for entry in historique_log:
+            file.write(entry + "\n")
 
-    with open("log.txt", "w") as file: #Ouvre le fichier
-        file.write(f"----Compteur log----\n\n")  # Réecrit le compteur_app avec les nouvelles données
-        for app_type, compte in compteur.items(): #Récup toutes les données précédentes et les met en boucles
-            file.write(f"{app_type} => {compte}\n") #Réecrit le compteur_app avec les nouvelles données
+    if statut == "V":
+        return compteurV[log_ajout]
+    elif statut == "R":
+        return compteurR[log_ajout]
 
-    return compteur[log_ajout]
+
