@@ -48,10 +48,6 @@ async def read_data(table: str, data: list[dict] | dict):
     return post_data(table_class, data)
 
 
-from fastapi import FastAPI
-
-app = FastAPI()
-
 @app.patch('/update/{table}/{column}={condition}') # EX => @app.patch('/update/Engrais/ID_ENGRAIS=1')
 async def update_data(table: str, column: str, condition: int, data: dict):
     '''

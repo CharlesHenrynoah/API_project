@@ -34,7 +34,6 @@ class Config:
 
     @staticmethod
     def database_connection():
-        Config.engine = create_engine(Config.DATABASE_URL, echo=False)
         try:
             Config.engine.connect()
             return f'Connecté à PostgresSQL'
@@ -70,6 +69,10 @@ class Config:
 
             return {"results": results}
         except Exception as e:
+            error = type(e)
+            print(type(e).__name__)
+            if error.__name__ == "DataError":
+                return {"error": "Il y a un problème avec la condition"}
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
                                 content={"error": str(e)})
 
