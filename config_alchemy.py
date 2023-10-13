@@ -86,35 +86,33 @@ class Config:
             if item_to_delete is not None:
                 session.delete(item_to_delete)
                 session.commit()
-                increment_and_log_api_counter('DELETE')
                 return "Donnée supprimée avec succès"
             else:
                 return "Erreur : Donnée non trouvée"
 
-def increment_and_log_api_counter(request_method):
-    # Lire les compteurs actuels à partir du fichier
-    counters = {'GET': 0, 'POST': 0, 'PATCH': 0, 'DELETE': 0}
+def logCompteur(log_ajout, statut):
+    compteur = {'GET': 0, 'POST': 0, 'PATCH': 0, 'DELETE': 0} #Compteur
 
     try:
-        with open("log.txt", "r") as file:
-            lines = file.readlines()
-            for line in lines:
-                parts = line.strip().split(" => ")
-                if len(parts) == 2:
-                    method, count = parts[0], int(parts[1])
-                    if method in counters:
-                        counters[method] = count
-    except (FileNotFoundError, ValueError):
+        with open("log.txt", "r") as file: #Ouvre le log.txt
+            lignes = file.readlines() #variable lignes recup toutes les lignes du txt
+            for ligne in lignes:
+                compteur_app = ligne.strip().split(" => ") #Variable compteur_app qui récupere les valeurs de la ligne, séparés par =>
+                if len(compteur_app) == 2: #Regarde si la ligne est bien en 3 "mots" (app => 0) et donc pas corrompu
+                    app_type, compte = compteur_app[0], int(compteur_app[1]) #Permet de recuperer la valeur 0 (app_type) et 1 (compte) de la ligne
+                    if app_type in compteur:
+                        compteur[app_type] = compte #Variable Compteur qui prends la valeur de app_type et compte
+
+    except (FileNotFoundError, ValueError): #Erreur si txt pas trouvé ou mauvaise valeur
         pass
 
-    # Incrémenter le compteur pour la méthode de la requête actuelle
-    if request_method in counters:
-        counters[request_method] += 1
 
-    # Écrire les compteurs mis à jour dans le fichier
-    with open("log.txt", "w") as file:
-        for method, count in counters.items():
-            file.write(f"{method} => {count}\n")
+    if log_ajout in compteur:
+        compteur[log_ajout] += 1 #Ajoute +1 a la variable compteur
 
-    # Retourner le compteur mis à jour pour la méthode de la requête actuelle
-    return counters[request_method]
+    with open("log.txt", "w") as file: #Ouvre le fichier
+        file.write(f"----Compteur log----\n\n")  # Réecrit le compteur_app avec les nouvelles données
+        for app_type, compte in compteur.items(): #Récup toutes les données précédentes et les met en boucles
+            file.write(f"{app_type} => {compte}\n") #Réecrit le compteur_app avec les nouvelles données
+
+    return compteur[log_ajout]
