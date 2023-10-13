@@ -1,15 +1,19 @@
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from pydantic import BaseModel
 from sqlalchemy import null
+from starlette import status
+from starlette.responses import JSONResponse
 
 from config_alchemy import Config, logCompteur
 from controllers.get_data import get_data
+from controllers.login_root import login_root
 from controllers.post_data import post_data
 from controllers.patch_data import UpdateDataModel, patch_data
 from controllers.delete_data import delete_data
+from utils.check_permission import check_permission
 from utils.get_table_class import get_table_class
 
 app = FastAPI(
@@ -22,37 +26,43 @@ def main():
 
 
 print(main())
-
+@app.middleware("http")
+async def verify_token(request: Request, call_next):
+    token = request.headers.get('Authorization')
+    if not (check_permission(request.method, request.url.path, auth=token)):
+        return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"error": "Accès interdit"})
+    response = await call_next(request)
+    return response
 
 @app.get('/select/{table}', responses={
-        200: {
-            "description": "reponse de la requête",
-            "content": {
-                "application/json": {
-                    "example":
-                        {
-                            "results": [
-                                {
-                                    "NO_PARCELLE": 2
-                                },
-                                {
-                                    "NO_PARCELLE": 1
-                                }
-                            ]
-                        }
-                }
-            },
-        },
-        400: {
-                "description": "erreur de la requête",
-                "content": {
-                    "application/json": {
-                        "example": {"error": "random error"}
+    200: {
+        "description": "reponse de la requête",
+        "content": {
+            "application/json": {
+                "example":
+                    {
+                        "results": [
+                            {
+                                "NO_PARCELLE": 2
+                            },
+                            {
+                                "NO_PARCELLE": 1
+                            }
+                        ]
                     }
-                },
-        }
+            }
+        },
+    },
+    400: {
+        "description": "erreur de la requête",
+        "content": {
+            "application/json": {
+                "example": {"error": "random error"}
+            }
+        },
+    }
 
-    })
+})
 def read_data(table: str, skip: int = 0, limit: int = 10, sort_by: Optional[str] = None,
               filters: Optional[str] = None,
               fields: Optional[str] = None):
@@ -111,22 +121,22 @@ def read_data(table: str, skip: int = 0, limit: int = 10, sort_by: Optional[str]
                     fields)
 
 
-@app.post('/insert/{table}',responses={
+@app.post('/insert/{table}', responses={
     200: {
-            "description": "reponse de la requête",
-            "content": {
-                "application/json": {
-                    "example": {"result": "Data has been added."}
-                }
-            },
+        "description": "reponse de la requête",
+        "content": {
+            "application/json": {
+                "example": {"result": "Data has been added."}
+            }
         },
+    },
     400: {
-            "description": "erreur de la requête",
-            "content": {
-                "application/json": {
-                    "example": {"error": "random error"}
-                }
-            },
+        "description": "erreur de la requête",
+        "content": {
+            "application/json": {
+                "example": {"error": "random error"}
+            }
+        },
     }
 })
 async def read_data(table: str, data: list[dict] | dict):
@@ -172,42 +182,42 @@ async def read_data(table: str, data: list[dict] | dict):
     table_class = get_table_class(table)
     if table_class is None:
         logCompteur('POST', "R", "Table not found")
-        return {"error": "Table not found"}
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "Table not found"})
     return post_data(table_class, data)
 
 
-@app.patch('/update/{table}/{column}={condition}',responses={
+@app.patch('/update/{table}/{column}={condition}', responses={
     200: {
-            "description": "reponse de la requête",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resultat": {
-                            "UN": "12345",
-                            "ID_ENGRAIS": 3,
-                            "NOM_ENGRAIS": "Update"
-                        }
+        "description": "reponse de la requête",
+        "content": {
+            "application/json": {
+                "example": {
+                    "resultat": {
+                        "UN": "12345",
+                        "ID_ENGRAIS": 3,
+                        "NOM_ENGRAIS": "Update"
                     }
                 }
-            },
+            }
         },
+    },
     400: {
-            "description": "erreur de la requête",
-            "content": {
-                "application/json": {
-                    "example":
-                        {
-                            "resultat": [
-                                "erreur",
-                                [
-                                    {}
-                                ]
+        "description": "erreur de la requête",
+        "content": {
+            "application/json": {
+                "example":
+                    {
+                        "resultat": [
+                            "erreur",
+                            [
+                                {}
                             ]
-                        }
-                }
-            },
+                        ]
+                    }
+            }
+        },
     }
-}) # EX => @app.patch('/update/Engrais/ID_ENGRAIS=1')
+})  # EX => @app.patch('/update/Engrais/ID_ENGRAIS=1')
 async def update_data(table: str, column: str, condition: int, data: dict):
     """
     ## Mettre à jour des données dans une table:
@@ -243,9 +253,10 @@ async def update_data(table: str, column: str, condition: int, data: dict):
     }
     ```
     """
-    table_class = get_table_class(table) # Traduit le paramètre "table" en une classe SQLAlchemy
-    if table_class is None: # Si la classe n'est pas trouvée
-        return {"message": f"Table non trouvée : {table} n'existe pas"}
+    table_class = get_table_class(table)  # Traduit le paramètre "table" en une classe SQLAlchemy
+    if table_class is None:  # Si la classe n'est pas trouvée
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                            content={"message": f"Table non trouvée : {table} n'existe pas"})
     # Si la classe est trouvée on appelle la fonction updateData de config_alchemy.py
     # qui va mettre à jour les données
     result = Config.updateData(table_class, data, column, condition)
@@ -258,31 +269,29 @@ async def update_data(table: str, column: str, condition: int, data: dict):
             condition)
         logCompteur('PATCH', "R", erreur)
         print(erreur)
-    else :
-        print ("resultat : " + result_print)
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error":erreur})
+    else:
+        print("resultat : " + result_print)
+
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content={"resultat": result})
 
 
-    return {"resultat": result}
-
-
-
-
-@app.delete('/delete/{table}/{condition_column}/{condition_value}',responses={
+@app.delete('/delete/{table}/{condition_column}/{condition_value}', responses={
     200: {
-            "description": "reponse de la requête",
-            "content": {
-                "application/json": {
-                    "example": "Erreur : Donnée non trouvée"
-                }
-            },
+        "description": "reponse de la requête",
+        "content": {
+            "application/json": {
+                "example": "Erreur : Donnée non trouvée"
+            }
         },
+    },
     400: {
-            "description": "erreur de la requête",
-            "content": {
-                "application/json": {
-                    "example":"Erreur : Donnée non trouvée"
-                }
-            },
+        "description": "erreur de la requête",
+        "content": {
+            "application/json": {
+                "example": "Erreur : Donnée non trouvée"
+            }
+        },
     }
 })
 def delete_specific_data(table: str, condition_column: str, condition_value: str):
@@ -313,3 +322,8 @@ def delete_specific_data(table: str, condition_column: str, condition_value: str
     ```
     """
     return delete_data(table, condition_column, condition_value)
+
+# Route de connexion (login)
+@app.post('/login')
+def login(user: dict):
+    return login_root(user["email"], user["password"])

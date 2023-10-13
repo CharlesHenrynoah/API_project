@@ -1,4 +1,7 @@
 from sqlalchemy.orm import Session
+from starlette import status
+from starlette.responses import JSONResponse
+
 from config_alchemy import Config, logCompteur
 from utils.get_table_class import get_table_class
 
@@ -8,7 +11,7 @@ def delete_data(table: str, condition_column: str, condition_value: str):
     table_class = get_table_class(table)
 
     if table_class is None:  # Vérifiez si la classe existe
-        return "Table non reconnue"
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error":"Table non reconnue"})
 
     with Session(Config.engine) as session:
         # Utilisation de filter_by pour appliquer des conditions de filtrage
