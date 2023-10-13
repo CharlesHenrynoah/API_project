@@ -5,7 +5,7 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from utils.get_table_class import get_table_class
-from config_alchemy import Config
+from config_alchemy import Config, logCompteur
 from classes.Culture import Culture
 from utils.sanitize import sanitize
 
@@ -31,6 +31,7 @@ def get_data(table: str, skip: int = 0, limit: int = 1, sort_by: Optional[str] =
     if class_table is None:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
                             content={"message": f"Table non trouvée : {table} n'existe pas"})
+
     # récupère les données de la table
     result = Config.selectData(class_table,  skip, limit, sanitized_filters, sanitized_sort, sanitized_fields)
     return result

@@ -167,9 +167,11 @@ async def read_data(table: str, data: list[dict] | dict):
     }
     ```
     """
+
     # traduit le paramètre "table" en une classe SQLAlchemy
     table_class = get_table_class(table)
     if table_class is None:
+        logCompteur('POST', "R")
         return {"error": "Table not found"}
     return post_data(table_class, data)
 
@@ -252,11 +254,11 @@ async def update_data(table: str, column: str, condition: int, data: dict):
     # On transforme le tuple en string pour pouvoir le comparer
     result_print = str_variable + tuple_as_str
     if result_print == "resultat : None":
-        logCompteur('PATCH', "R")
-        print("<<<<<== Échec de la modification, vérifiez si " + column + " a bien une ligne avec pour valeur : " + str(
-            condition))
+        erreur = "<<<<<== Échec de la modification, vérifiez si " + column + " a bien une ligne avec pour valeur : " + str(
+            condition)
+        logCompteur('PATCH', "R", erreur)
+        print(erreur)
     else :
-        logCompteur('PATCH', "V")
         print ("resultat : " + result_print)
 
 

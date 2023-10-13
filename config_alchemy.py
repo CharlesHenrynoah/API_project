@@ -73,10 +73,12 @@ class Config:
                     else:
                         results.append(row[0].as_dict())
 
+            logCompteur("GET", "V", results)
             return {"results": results}
         except Exception as e:
             error = type(e)
             print(type(e).__name__)
+            logCompteur("GET", "R", type(e))
             if error.__name__ == "DataError":
                 return {"error": "Il y a un problème avec la condition"}
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
@@ -87,6 +89,7 @@ class Config:
     def insertData(class_to_insert, data):
 
         if not data:
+            logCompteur('POST', "R")
             return {"error": "No data provided"}
 
         sql_req = insert(class_to_insert).values(data)
@@ -96,12 +99,14 @@ class Config:
             with Session(Config.engine) as session:
                 session.execute(sql_req)
                 session.commit()
+                logCompteur("POST", "V", sql_req)
                 return {"result": "Data has been added."}
 
         # si la requête a échoué, le résultat sera {"error": "le message d'erreur"}
         # verifiez le type d'erreur pour savoir ce qui s'est mal passé
         except Exception as e:
             error = type(e)
+            logCompteur('POST', "R", error.__name__)
             print(error.__name__)
             if error.__name__ == "CompileError":
                 return {"error": "Data key error"}
@@ -122,6 +127,7 @@ class Config:
                 session.commit()
                 updated_data = session.query(class_to_insert).filter(
                     getattr(class_to_insert, column) == condition).first()
+                logCompteur('PATCH', "V", sql_req)
                 return updated_data
         except Exception as e:
             return "erreur", str(e)
@@ -146,7 +152,7 @@ compteurR = {'GET': 0, 'POST': 0, 'PATCH': 0, 'DELETE': 0}  # Compteur
 historique_log = []
 dateTime = datetime.now()
 
-def logCompteur(log_ajout, statut):
+def logCompteur(log_ajout, statut, requete):
     global historique_log
 
     try:
@@ -165,11 +171,11 @@ def logCompteur(log_ajout, statut):
 
     if log_ajout in compteurV and statut == "V":
         compteurV[log_ajout] += 1
-        historique_log.append(f"{dateTime} => {log_ajout} VALIDE")
+        historique_log.append(f"{dateTime} => {log_ajout} {requete} | VALIDE")
         print("V +1")
     if log_ajout in compteurR and statut == "R":
         compteurR[log_ajout] += 1
-        historique_log.append(f"{dateTime} => {log_ajout} REFUSÉ")
+        historique_log.append(f"{dateTime} => {log_ajout} {requete} | REFUSÉ")
         print("R +1")
 
     # Ouvrir le fichier en mode écriture ici, après les mises à jour

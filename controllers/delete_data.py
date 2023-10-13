@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from config_alchemy import Config
+from config_alchemy import Config, logCompteur
 from utils.get_table_class import get_table_class
 
 
@@ -20,4 +20,5 @@ def delete_data(table: str, condition_column: str, condition_value: str):
             session.commit()
             return "Donnée supprimée avec succès"
         else:
+            logCompteur('DELETE', "R", item_to_delete)
             return "Erreur : Donnée non trouvée"
