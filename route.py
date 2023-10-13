@@ -24,10 +24,88 @@ def main():
 print(main())
 
 
-@app.get('/select/{table}')
+@app.get('/select/{table}', responses={
+        200: {
+            "description": "reponse de la requête",
+            "content": {
+                "application/json": {
+                    "example":
+                        {
+                            "results": [
+                                {
+                                    "NO_PARCELLE": 2
+                                },
+                                {
+                                    "NO_PARCELLE": 1
+                                }
+                            ]
+                        }
+                }
+            },
+        },
+        400: {
+                "description": "erreur de la requête",
+                "content": {
+                    "application/json": {
+                        "example": {"error": "random error"}
+                    }
+                },
+        }
+
+    })
 def read_data(table: str, skip: int = 0, limit: int = 10, sort_by: Optional[str] = None,
               filters: Optional[str] = None,
               fields: Optional[str] = None):
+    """
+    ## Sélectionner des données dans une table:
+
+    **Param table: string** = nom de la table.
+
+    **Param skip: int** = nombre de lignes à sauter.
+
+    **Param limit: int** = nombre de lignes à retourner.
+
+    **Param sort_by: string** = nom des colonnes pour trier les données.
+
+    **Param filters: string** = conditions pour filtrer les données.
+
+    **Param fields: string** = nom des colonnes à retourner.
+
+    exemple paramètre table PARCELLE
+
+    exemple paramètre skip 0
+
+    exemple paramètre limit 10
+
+    exemple paramètre sort_by= -SURFACE, NOM_PARCELLE
+
+    exemple paramètre filters SURFACE>9
+
+    exemple paramètre fields NO_PARCELLE
+
+    ## Résultat:
+    **results: dict** = resultat de la requête
+    ```json
+    {
+    "results": [
+        {
+            "NO_PARCELLE": 2
+        },
+        {
+            "NO_PARCELLE": 1
+        }
+    ]
+    }
+    ```
+    ## Erreur:
+    **error: dict** = erreur de la requête
+    ```json
+    {
+        "error": "random error"
+    }
+    ```
+
+    """
     return get_data(table, skip, limit, sort_by,
                     filters,
                     fields)
