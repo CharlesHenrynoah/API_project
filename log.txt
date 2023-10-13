@@ -1,0 +1,14 @@
+----Compteur log----
+
+GET => 1
+POST => 0
+PATCH => 0
+DELETE => 0
+
+GET => 0
+POST => 0
+PATCH => 0
+DELETE => 0
+----Historique des requetes----
+
+2023-10-13 17:37:08.978241 => GET [{'NO_PARCELLE': 2, 'SURFACE': 850.0, 'NOM_PARCELLE': 'ujikkj', 'COORDONNEES': 'jnkjn;'}, {'NO_PARCELLE': 1, 'SURFACE': 20.0, 'NOM_PARCELLE': 'alalal', 'COORDONNEES': 'xiksjjsjs'}] | VALIDE

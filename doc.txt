@@ -1,0 +1,99 @@
+<!
+Faire "pip install -r requirements.txt" dans le terminal pour avoir tous les imports utile
+!>
+
+
+<--↓↓↓-------------↓↓↓-ARCHITECTURE-PROJET-↓↓↓-------------↓↓↓-->
+API_project
+├── entites
+│   ├── culture
+│   │   └── culture_api.py
+│   │
+│   ├── date
+│   │   └── date_api.py
+│   │
+│   ├── element_chimiques
+│   │   └── element_chimiques.py
+│   │
+│   ├── engrais
+│   │   └── engrais_api.py
+│   │
+│   ├── epandre
+│   │   └── epandre_api.py
+│   │
+│   ├── parcelle
+│   │   └── parcelle_api.py
+│   │
+│   ├── posseder
+│   │   └──posseder_api.py
+│   │
+│   ├── production
+│   │   └── production_api.py
+│   │
+│   └── unite
+│       └── unite_api.py
+│
+├── venv
+│
+├── .env
+│
+│
+├── doc.txt
+│
+│
+├── log.txt
+│
+├── main.py
+│
+├── requirements.txt
+│
+└── route.py
+<--↑↑↑-------------↑↑↑-ARCHITECTURE-PROJET-↑↑↑-------------↑↑↑-->
+
+###
+
+<--↓↓↓--------------↓↓↓-FONCTIONS-FICHIERS-↓↓↓-------------↓↓↓-->
+
+-> culture_api.py =>
+-> date_api.py =>
+-> elements_chimiques_api.py =>
+-> engrais_api.py =>
+-> epandre_api.py =>
+-> parcelle_api.py =>
+-> posseder_api.py =>
+-> production_api.py =>
+-> unite_api.py =>
+
+<--↑↑↑--------------↑↑↑-FONCTIONS-FICHIERS-↑↑↑-------------↑↑↑-->
+
+###
+
+<--↓↓↓---------------↓↓↓-ERREURS-REQUETES-↓↓↓--------------↓↓↓-->
+
+307 Temporary Redirect
+==> Méthode changé en GET pour obtenir les info de l'erreur
+
+404 Not Found "PATCH /update/Engrais/1 "
+==> URL mal écrit
+
+422 Unprocessable Entity
+==> Requete API mal écrite ou JSON non valide
+    ->@app.patch('/update/{table}') ERREUR
+    ->@app.patch('/update/{table}/{condition}') VALIDE
+
+    ->"UN": test ERREUR
+    ->"UN": "test" VALIDE
+
+<--↑↑↑---------------↑↑↑-ERREURS-REQUETES-↑↑↑--------------↑↑↑-->
+
+###
+
+<--↓↓↓-----------------↓↓↓-REQUETES-SQL-↓↓↓----------------↓↓↓-->
+
+Config.insertData() => Insertion des données dans la base de données avec:
+parametres: nom de la table
+body: valeurs à insérer
+
+<--↑↑↑----------------↑↑↑-REQUETES-SQL-↑↑↑----------------↑↑↑-->
+
+
