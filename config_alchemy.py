@@ -73,10 +73,12 @@ class Config:
                     else:
                         results.append(row[0].as_dict())
 
+            logCompteur("GET", "V", results)
             return {"results": results}
         except Exception as e:
             error = type(e)
             print(type(e).__name__)
+            logCompteur("GET", "R", type(e))
             if error.__name__ == "DataError":
                 return {"error": "Il y a un problème avec la condition"}
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
